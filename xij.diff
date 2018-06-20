@@ -1,0 +1,78 @@
+--- sys/kern/kern_jail.c.org	2018-06-20 15:06:07.171318000 +0900
++++ sys/kern/kern_jail.c	2018-06-20 15:08:36.508372000 +0900
+@@ -192,6 +192,7 @@
+ 	{"allow.socket_af", "allow.nosocket_af", PR_ALLOW_SOCKET_AF},
+ 	{"allow.reserved_ports", "allow.noreserved_ports",
+ 	 PR_ALLOW_RESERVED_PORTS},
++	{"allow.kmem", "allow.nokmem", PR_ALLOW_KMEM_ACCESS},
+ };
+ const size_t pr_flag_allow_size = sizeof(pr_flag_allow);
+ 
+@@ -3331,6 +3332,27 @@
+ 		return (0);
+ 
+ 		/*
++		 * Allow access to /dev/io in a jail if the non-jailed admin
++		 * requests this and if /dev/io exists in the jail. This
++		 * allows Xorg to probe a card.
++		 */
++	case PRIV_IO:
++		if (cred->cr_prison->pr_allow & PR_ALLOW_KMEM_ACCESS)
++			return (0);
++		else
++			return (EPERM);
++
++		/*
++		 * Allow low level access to KMEM-like devices (e.g. to
++		 * allow Xorg to use DRI).
++		 */
++	case PRIV_KMEM_WRITE:
++		if (cred->cr_prison->pr_allow & PR_ALLOW_KMEM_ACCESS)
++			return (0);
++		else
++			return (EPERM);
++
++		/*
+ 		 * Allow jailed root to set loginclass.
+ 		 */
+ 	case PRIV_PROC_SETLOGINCLASS:
+@@ -3606,6 +3628,10 @@
+     CTLTYPE_INT | CTLFLAG_RW | CTLFLAG_MPSAFE,
+     NULL, PR_ALLOW_MOUNT, sysctl_jail_default_allow, "I",
+     "Processes in jail can mount/unmount jail-friendly file systems (deprecated)");
++SYSCTL_PROC(_security_jail, OID_AUTO, kmem_allowed,
++    CTLTYPE_INT | CTLFLAG_RW | CTLFLAG_MPSAFE,
++    NULL, PR_ALLOW_KMEM_ACCESS, sysctl_jail_default_allow, "I",
++    "Processes in jail can access kmem");
+ 
+ static int
+ sysctl_jail_default_level(SYSCTL_HANDLER_ARGS)
+@@ -3754,6 +3780,8 @@
+     "B", "Jail may create sockets other than just UNIX/IPv4/IPv6/route");
+ SYSCTL_JAIL_PARAM(_allow, reserved_ports, CTLTYPE_INT | CTLFLAG_RW,
+     "B", "Jail may bind sockets to reserved ports");
++SYSCTL_JAIL_PARAM(_allow, kmem, CTLTYPE_INT | CTLFLAG_RW,
++    "B", "Jail may access kmem-like devices (io, dri) if they exist");
+ 
+ SYSCTL_JAIL_PARAM_SUBNODE(allow, mount, "Jail mount/unmount permission flags");
+ SYSCTL_JAIL_PARAM(_allow_mount, , CTLTYPE_INT | CTLFLAG_RW,
+--- usr.sbin/jail/jail.8.org	2018-06-20 15:03:43.000000000 +0900
++++ usr.sbin/jail/jail.8	2018-06-20 15:09:47.677186000 +0900
+@@ -555,6 +555,17 @@
+ have not had jail functionality added to them.
+ .It Va allow.reserved_ports
+ The jail root may bind to ports lower than 1024.
++.It Va allow.kmem
++Jailed processes may access
++.Pa /dev/kmem
++and similar devices (e.g. io, dri) if they have sufficient permission
++(via the usual file permissions).
++Note that the device files must exist within the jail for this parameter
++to be of any use;
++the default devfs ruleset for jails does not include any such devices.
++Giving a jail access to kernel memory obviates much of the security that
++jails offer, but can still be useful for other purposes.
++For example, this would allow the Xorg server to run inside a jail.
+ .El
+ .El
+ .Pp

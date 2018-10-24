@@ -1,16 +1,16 @@
 Index: sys/kern/kern_jail.c
 ===================================================================
---- sys/kern/kern_jail.c	(revision 333601)
+--- sys/kern/kern_jail.c	(revision 339671)
 +++ sys/kern/kern_jail.c	(working copy)
-@@ -192,6 +192,7 @@
- 	{"allow.socket_af", "allow.nosocket_af", PR_ALLOW_SOCKET_AF},
+@@ -194,6 +194,7 @@
  	{"allow.reserved_ports", "allow.noreserved_ports",
  	 PR_ALLOW_RESERVED_PORTS},
+ 	{"allow.read_msgbuf", "allow.noread_msgbuf", PR_ALLOW_READ_MSGBUF},
 +	{"allow.kmem", "allow.nokmem", PR_ALLOW_KMEM_ACCESS},
  };
  const size_t pr_flag_allow_size = sizeof(pr_flag_allow);
  
-@@ -3331,6 +3332,27 @@
+@@ -3346,6 +3347,27 @@
  		return (0);
  
  		/*
@@ -38,7 +38,7 @@ Index: sys/kern/kern_jail.c
  		 * Allow jailed root to set loginclass.
  		 */
  	case PRIV_PROC_SETLOGINCLASS:
-@@ -3606,6 +3628,10 @@
+@@ -3630,6 +3652,10 @@
      CTLTYPE_INT | CTLFLAG_RW | CTLFLAG_MPSAFE,
      NULL, PR_ALLOW_MOUNT, sysctl_jail_default_allow, "I",
      "Processes in jail can mount/unmount jail-friendly file systems (deprecated)");
@@ -49,10 +49,10 @@ Index: sys/kern/kern_jail.c
  
  static int
  sysctl_jail_default_level(SYSCTL_HANDLER_ARGS)
-@@ -3754,6 +3780,8 @@
-     "B", "Jail may create sockets other than just UNIX/IPv4/IPv6/route");
- SYSCTL_JAIL_PARAM(_allow, reserved_ports, CTLTYPE_INT | CTLFLAG_RW,
+@@ -3782,6 +3808,8 @@
      "B", "Jail may bind sockets to reserved ports");
+ SYSCTL_JAIL_PARAM(_allow, read_msgbuf, CTLTYPE_INT | CTLFLAG_RW,
+     "B", "Jail may read the kernel message buffer");
 +SYSCTL_JAIL_PARAM(_allow, kmem, CTLTYPE_INT | CTLFLAG_RW,
 +    "B", "Jail may access kmem-like devices (io, dri) if they exist");
  
@@ -60,10 +60,10 @@ Index: sys/kern/kern_jail.c
  SYSCTL_JAIL_PARAM(_allow_mount, , CTLTYPE_INT | CTLFLAG_RW,
 Index: usr.sbin/jail/jail.8
 ===================================================================
---- usr.sbin/jail/jail.8	(revision 333601)
+--- usr.sbin/jail/jail.8	(revision 339671)
 +++ usr.sbin/jail/jail.8	(working copy)
-@@ -555,6 +555,17 @@
- have not had jail functionality added to them.
+@@ -570,6 +570,17 @@
+ and resource limits.
  .It Va allow.reserved_ports
  The jail root may bind to ports lower than 1024.
 +.It Va allow.kmem

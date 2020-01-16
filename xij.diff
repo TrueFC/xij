@@ -1,16 +1,16 @@
 Index: sys/kern/kern_jail.c
 ===================================================================
---- sys/kern/kern_jail.c	(revision 339677)
+--- sys/kern/kern_jail.c	(revision 356739)
 +++ sys/kern/kern_jail.c	(working copy)
-@@ -194,6 +194,7 @@
- 	{"allow.reserved_ports", "allow.noreserved_ports",
- 	 PR_ALLOW_RESERVED_PORTS},
+@@ -196,6 +196,7 @@
  	{"allow.read_msgbuf", "allow.noread_msgbuf", PR_ALLOW_READ_MSGBUF},
+ 	{"allow.unprivileged_proc_debug", "allow.nounprivileged_proc_debug",
+ 	 PR_ALLOW_UNPRIV_DEBUG},
 +	{"allow.kmem", "allow.nokmem", PR_ALLOW_KMEM_ACCESS},
  };
  const size_t pr_flag_allow_size = sizeof(pr_flag_allow);
  
-@@ -3346,6 +3347,27 @@
+@@ -3353,6 +3354,27 @@
  		return (0);
  
  		/*
@@ -38,7 +38,7 @@ Index: sys/kern/kern_jail.c
  		 * Allow jailed root to set loginclass.
  		 */
  	case PRIV_PROC_SETLOGINCLASS:
-@@ -3630,6 +3652,10 @@
+@@ -3637,6 +3659,10 @@
      CTLTYPE_INT | CTLFLAG_RW | CTLFLAG_MPSAFE,
      NULL, PR_ALLOW_MOUNT, sysctl_jail_default_allow, "I",
      "Processes in jail can mount/unmount jail-friendly file systems (deprecated)");
@@ -49,10 +49,10 @@ Index: sys/kern/kern_jail.c
  
  static int
  sysctl_jail_default_level(SYSCTL_HANDLER_ARGS)
-@@ -3782,6 +3808,8 @@
-     "B", "Jail may bind sockets to reserved ports");
- SYSCTL_JAIL_PARAM(_allow, read_msgbuf, CTLTYPE_INT | CTLFLAG_RW,
+@@ -3791,6 +3817,8 @@
      "B", "Jail may read the kernel message buffer");
+ SYSCTL_JAIL_PARAM(_allow, unprivileged_proc_debug, CTLTYPE_INT | CTLFLAG_RW,
+     "B", "Unprivileged processes may use process debugging facilities");
 +SYSCTL_JAIL_PARAM(_allow, kmem, CTLTYPE_INT | CTLFLAG_RW,
 +    "B", "Jail may access kmem-like devices (io, dri) if they exist");
  
@@ -60,9 +60,9 @@ Index: sys/kern/kern_jail.c
  SYSCTL_JAIL_PARAM(_allow_mount, , CTLTYPE_INT | CTLFLAG_RW,
 Index: usr.sbin/jail/jail.8
 ===================================================================
---- usr.sbin/jail/jail.8	(revision 339677)
+--- usr.sbin/jail/jail.8	(revision 356739)
 +++ usr.sbin/jail/jail.8	(working copy)
-@@ -570,6 +570,17 @@
+@@ -582,6 +582,17 @@
  and resource limits.
  .It Va allow.reserved_ports
  The jail root may bind to ports lower than 1024.
@@ -77,6 +77,6 @@ Index: usr.sbin/jail/jail.8
 +Giving a jail access to kernel memory obviates much of the security that
 +jails offer, but can still be useful for other purposes.
 +For example, this would allow the Xorg server to run inside a jail.
+ .It Va allow.unprivileged_proc_debug
+ Unprivileged processes in the jail may use debugging facilities.
  .El
- .El
- .Pp

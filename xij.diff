@@ -1,6 +1,6 @@
 Index: sys/kern/kern_jail.c
 ===================================================================
---- sys/kern/kern_jail.c	(revision 356739)
+--- sys/kern/kern_jail.c	(revision 359315)
 +++ sys/kern/kern_jail.c	(working copy)
 @@ -196,6 +196,7 @@
  	{"allow.read_msgbuf", "allow.noread_msgbuf", PR_ALLOW_READ_MSGBUF},
@@ -10,7 +10,7 @@ Index: sys/kern/kern_jail.c
  };
  const size_t pr_flag_allow_size = sizeof(pr_flag_allow);
  
-@@ -3353,6 +3354,27 @@
+@@ -3333,6 +3334,27 @@
  		return (0);
  
  		/*
@@ -38,7 +38,7 @@ Index: sys/kern/kern_jail.c
  		 * Allow jailed root to set loginclass.
  		 */
  	case PRIV_PROC_SETLOGINCLASS:
-@@ -3637,6 +3659,10 @@
+@@ -3616,6 +3638,10 @@
      CTLTYPE_INT | CTLFLAG_RW | CTLFLAG_MPSAFE,
      NULL, PR_ALLOW_MOUNT, sysctl_jail_default_allow, "I",
      "Processes in jail can mount/unmount jail-friendly file systems (deprecated)");
@@ -49,7 +49,7 @@ Index: sys/kern/kern_jail.c
  
  static int
  sysctl_jail_default_level(SYSCTL_HANDLER_ARGS)
-@@ -3791,6 +3817,8 @@
+@@ -3770,6 +3796,8 @@
      "B", "Jail may read the kernel message buffer");
  SYSCTL_JAIL_PARAM(_allow, unprivileged_proc_debug, CTLTYPE_INT | CTLFLAG_RW,
      "B", "Unprivileged processes may use process debugging facilities");
@@ -60,7 +60,7 @@ Index: sys/kern/kern_jail.c
  SYSCTL_JAIL_PARAM(_allow_mount, , CTLTYPE_INT | CTLFLAG_RW,
 Index: usr.sbin/jail/jail.8
 ===================================================================
---- usr.sbin/jail/jail.8	(revision 356739)
+--- usr.sbin/jail/jail.8	(revision 359315)
 +++ usr.sbin/jail/jail.8	(working copy)
 @@ -582,6 +582,17 @@
  and resource limits.

@@ -8,6 +8,10 @@
 
 ## タグの更新履歴
 
+* **13.0-CURRENT-r360676** (Thu 11 May 2020 10:45:30)
+
+	FreeBSD 13.0-CURRENT リビジョン 360676 用
+
 * **13.0-CURRENT-r359315** (Thu 26 Mar 2020 20:56:43)
 
 	FreeBSD 13.0-CURRENT リビジョン 359315 用

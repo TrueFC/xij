@@ -8,6 +8,10 @@ will be limited to only a few exhaust fans sound enthusiasts ;-)
 
 ## Tag update history 
 
+* **13.0-CURRENT-r362853** (Thu 09 Jun 2020 07:28:13)
+
+	FreeBSD 13.0-CURRENT for revision 362853
+
 * **13.0-CURRENT-r360676** (Thu 11 May 2020 10:45:30)
 
 	FreeBSD 13.0-CURRENT for revision 360676

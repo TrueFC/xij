@@ -1,19 +1,14 @@
-Index: sys/kern/kern_jail.c
-===================================================================
---- sys/kern/kern_jail.c	(revision 367712)
-+++ sys/kern/kern_jail.c	(working copy)
-@@ -199,6 +199,7 @@
- 	{"allow.read_msgbuf", "allow.noread_msgbuf", PR_ALLOW_READ_MSGBUF},
- 	{"allow.unprivileged_proc_debug", "allow.nounprivileged_proc_debug",
- 	 PR_ALLOW_UNPRIV_DEBUG},
+diff --git a/sys/kern/kern_jail.c b/sys/kern/kern_jail.c
+index 9784f3bfc23b..7a49d92334b5 100644
+--- a/sys/kern/kern_jail.c
++++ b/sys/kern/kern_jail.c
+@@ -215,2 +215,3 @@ static struct bool_flags pr_flag_allow[NBBY * NBPW] = {
+ 	{"allow.suser", "allow.nosuser", PR_ALLOW_SUSER},
 +	{"allow.kmem", "allow.nokmem", PR_ALLOW_KMEM_ACCESS},
  };
- const size_t pr_flag_allow_size = sizeof(pr_flag_allow);
+@@ -3710,2 +3711,23 @@ prison_priv_check(struct ucred *cred, int priv)
  
-@@ -3378,6 +3379,27 @@
- 		return (0);
- 
- 		/*
++		/*
 +		 * Allow access to /dev/io in a jail if the non-jailed admin
 +		 * requests this and if /dev/io exists in the jail. This
 +		 * allows Xorg to probe a card.
@@ -34,37 +29,24 @@ Index: sys/kern/kern_jail.c
 +		else
 +			return (EPERM);
 +
-+		/*
- 		 * Allow jailed root to set loginclass.
- 		 */
- 	case PRIV_PROC_SETLOGINCLASS:
-@@ -3661,6 +3683,10 @@
-     CTLTYPE_INT | CTLFLAG_RW | CTLFLAG_MPSAFE,
-     NULL, PR_ALLOW_MOUNT, sysctl_jail_default_allow, "I",
+ 		/*
+@@ -3991,2 +4013,6 @@ SYSCTL_PROC(_security_jail, OID_AUTO, mount_allowed,
      "Processes in jail can mount/unmount jail-friendly file systems (deprecated)");
 +SYSCTL_PROC(_security_jail, OID_AUTO, kmem_allowed,
 +    CTLTYPE_INT | CTLFLAG_RW | CTLFLAG_MPSAFE,
 +    NULL, PR_ALLOW_KMEM_ACCESS, sysctl_jail_default_allow, "I",
 +    "Processes in jail can access kmem");
  
- static int
- sysctl_jail_default_level(SYSCTL_HANDLER_ARGS)
-@@ -3815,6 +3841,8 @@
-     "B", "Jail may read the kernel message buffer");
- SYSCTL_JAIL_PARAM(_allow, unprivileged_proc_debug, CTLTYPE_INT | CTLFLAG_RW,
-     "B", "Unprivileged processes may use process debugging facilities");
+@@ -4147,2 +4173,4 @@ SYSCTL_JAIL_PARAM(_allow, suser, CTLTYPE_INT | CTLFLAG_RW,
+     "B", "Processes in jail with uid 0 have privilege");
 +SYSCTL_JAIL_PARAM(_allow, kmem, CTLTYPE_INT | CTLFLAG_RW,
 +    "B", "Jail may access kmem-like devices (io, dri) if they exist");
  
- SYSCTL_JAIL_PARAM_SUBNODE(allow, mount, "Jail mount/unmount permission flags");
- SYSCTL_JAIL_PARAM(_allow_mount, , CTLTYPE_INT | CTLFLAG_RW,
-Index: usr.sbin/jail/jail.8
-===================================================================
---- usr.sbin/jail/jail.8	(revision 367712)
-+++ usr.sbin/jail/jail.8	(working copy)
-@@ -585,6 +585,17 @@
- and resource limits.
- .It Va allow.reserved_ports
+diff --git a/usr.sbin/jail/jail.8 b/usr.sbin/jail/jail.8
+index 61fe91cf973e..28d01daa4a16 100644
+--- a/usr.sbin/jail/jail.8
++++ b/usr.sbin/jail/jail.8
+@@ -587,2 +587,13 @@ and resource limits.
  The jail root may bind to ports lower than 1024.
 +.It Va allow.kmem
 +Jailed processes may access
@@ -78,5 +60,3 @@ Index: usr.sbin/jail/jail.8
 +jails offer, but can still be useful for other purposes.
 +For example, this would allow the Xorg server to run inside a jail.
  .It Va allow.unprivileged_proc_debug
- Unprivileged processes in the jail may use debugging facilities.
- .El

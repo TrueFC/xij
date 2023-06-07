@@ -8,6 +8,10 @@
 
 ## タグの更新履歴
 
+* **14.0-CURRENT-9d6ae1e3c26a** (Thu 8 Jun 2023 07:19:00)
+
+	FreeBSD 14.0-CURRENT リビジョン 9d6ae1e3c26a 用
+
 * **14.0-CURRENT-cc1345056b11** (Thu 19 Aug 2021 06:27:40)
 
 	FreeBSD 14.0-CURRENT リビジョン cc1345056b11 用

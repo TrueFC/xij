@@ -61,24 +61,24 @@ index 07924f3dc7c9..99e77de0e6d5 100644
  /*
   * Add a dynamic parameter allow.<name>, or allow.<prefix>.<name>.  Return
 diff --git a/usr.sbin/jail/jail.8 b/usr.sbin/jail/jail.8
-index a69702900d8e..a61849a37946 100644
+index a69702900d8e..7ae4a720207f 100644
 --- a/usr.sbin/jail/jail.8
 +++ b/usr.sbin/jail/jail.8
 @@ -631,6 +631,17 @@ in the
  file outside of the jails.
  .It Va allow.reserved_ports
  The jail root may bind to ports lower than 1024.
-++.It Va allow.kmem
-++Jailed processes may access
-++.Pa /dev/kmem
-++and similar devices (e.g. io, dri) if they have sufficient permission
-++(via the usual file permissions).
-++Note that the device files must exist within the jail for this parameter
-++to be of any use;
-++the default devfs ruleset for jails does not include any such devices.
-++Giving a jail access to kernel memory obviates much of the security that
-++jails offer, but can still be useful for other purposes.
-++For example, this would allow the Xorg server to run inside a jail.
++.It Va allow.kmem
++Jailed processes may access
++.Pa /dev/kmem
++and similar devices (e.g. io, dri) if they have sufficient permission
++(via the usual file permissions).
++Note that the device files must exist within the jail for this parameter
++to be of any use;
++the default devfs ruleset for jails does not include any such devices.
++Giving a jail access to kernel memory obviates much of the security that
++jails offer, but can still be useful for other purposes.
++For example, this would allow the Xorg server to run inside a jail.
  .It Va allow.unprivileged_proc_debug
  Unprivileged processes in the jail may use debugging facilities.
  .It Va allow.suser

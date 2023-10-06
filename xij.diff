@@ -1,11 +1,11 @@
 diff --git a/sys/kern/kern_jail.c b/sys/kern/kern_jail.c
-index 07924f3dc7c9..99e77de0e6d5 100644
+index 66bcd77ca8d2..43ab5a0ccab6 100644
 --- a/sys/kern/kern_jail.c
 +++ b/sys/kern/kern_jail.c
-@@ -222,6 +222,7 @@ static struct bool_flags pr_flag_allow[NBBY * NBPW] = {
- #ifdef VIMAGE
+@@ -221,6 +221,7 @@ static struct bool_flags pr_flag_allow[NBBY * NBPW] = {
  	{"allow.nfsd", "allow.nonfsd", PR_ALLOW_NFSD},
  #endif
+ 	{"allow.extattr", "allow.noextattr", PR_ALLOW_EXTATTR},
 +	{"allow.kmem", "allow.nokmem", PR_ALLOW_KMEM_ACCESS},
  };
  static unsigned pr_allow_all = PR_ALLOW_ALL_STATIC;
@@ -38,7 +38,7 @@ index 07924f3dc7c9..99e77de0e6d5 100644
  		/*
  		 * Depending on the global setting, allow privilege of
  		 * setting system flags.
-@@ -4394,6 +4416,11 @@ SYSCTL_PROC(_security_jail, OID_AUTO, mount_allowed,
+@@ -4405,6 +4427,11 @@ SYSCTL_PROC(_security_jail, OID_AUTO, mount_allowed,
      CTLTYPE_INT | CTLFLAG_RW | CTLFLAG_MPSAFE,
      NULL, PR_ALLOW_MOUNT, sysctl_jail_default_allow, "I",
      "Processes in jail can mount/unmount jail-friendly file systems (deprecated)");
@@ -50,7 +50,7 @@ index 07924f3dc7c9..99e77de0e6d5 100644
  
  static int
  sysctl_jail_default_level(SYSCTL_HANDLER_ARGS)
-@@ -4558,6 +4585,9 @@ SYSCTL_JAIL_PARAM(_allow, nfsd, CTLTYPE_INT | CTLFLAG_RW,
+@@ -4571,6 +4598,9 @@ SYSCTL_JAIL_PARAM(_allow, extattr, CTLTYPE_INT | CTLFLAG_RW,
  SYSCTL_JAIL_PARAM_SUBNODE(allow, mount, "Jail mount/unmount permission flags");
  SYSCTL_JAIL_PARAM(_allow_mount, , CTLTYPE_INT | CTLFLAG_RW,
      "B", "Jail may mount/unmount jail-friendly file systems in general");
@@ -61,10 +61,10 @@ index 07924f3dc7c9..99e77de0e6d5 100644
  /*
   * Add a dynamic parameter allow.<name>, or allow.<prefix>.<name>.  Return
 diff --git a/usr.sbin/jail/jail.8 b/usr.sbin/jail/jail.8
-index a69702900d8e..7ae4a720207f 100644
+index 21f395609bb5..de5182664be1 100644
 --- a/usr.sbin/jail/jail.8
 +++ b/usr.sbin/jail/jail.8
-@@ -631,6 +631,17 @@ in the
+@@ -634,6 +634,17 @@ in the
  file outside of the jails.
  .It Va allow.reserved_ports
  The jail root may bind to ports lower than 1024.

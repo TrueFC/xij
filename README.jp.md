@@ -8,6 +8,10 @@
 
 ## タグの更新履歴
 
+* **15.0-CURRENT-9b03a5de73d4** (Fri 6 Sep 2023 10:33:39)
+
+	FreeBSD 15.0-CURRENT for リビジョン 9b03a5de73d4 用
+
 * **14.0-CURRENT-c5312bd79e66** (Wed 19 Jul 2023 16:41:50)
 
 	FreeBSD 14.0-CURRENT リビジョン c5312bd79e66 用
